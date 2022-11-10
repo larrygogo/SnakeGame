@@ -15,13 +15,27 @@ class Scene {
 		this.events.push(event);
 	}
 
+	clearEvents() {
+		this.events.forEach(event => {
+			event.remove();
+		})
+	}
+
 	render() {
 		this.sprites.forEach(sprite => {
 			sprite.draw();
 		});
+	}
+
+	beforeMount() {
 		this.events.forEach(event => {
 			event.run();
 		});
+	}
+
+	destroy() {
+		this.clearEvents();
+		this.sprites = [];
 	}
 }
 

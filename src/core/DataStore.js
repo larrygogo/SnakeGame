@@ -5,6 +5,7 @@ class DataStore {
 		this.canvas = null
 		this.ctx = null
 		this.game = null
+		this.scenes = new Map()
 	}
 
 	add(key, value) {

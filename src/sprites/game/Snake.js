@@ -1,5 +1,5 @@
 import SnakeBody from "./SnakeBody.js";
-import DataStore from "../core/DataStore.js";
+import DataStore from "../../core/DataStore.js";
 
 class Snake {
 	/**

@@ -1,5 +1,5 @@
-import Sprite from "../core/Sprite.js";
-import DataStore from "../core/DataStore.js";
+import Sprite from "../../core/Sprite.js";
+import DataStore from "../../core/DataStore.js";
 
 class Food extends Sprite {
 	constructor(x, y) {
