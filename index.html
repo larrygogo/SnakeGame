@@ -7,8 +7,16 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #334155;
+        }
         canvas {
-            border: 1px solid black;
+            border: 1px solid white;
         }
     </style>
 </head>
@@ -16,6 +24,6 @@
 </body>
 <script type="module">
     import Game from "/src/game.js";
-    new Game({width: 30, height: 30});
+    new Game({width: 16, height: 16});
 </script>
 </html>

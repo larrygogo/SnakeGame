@@ -6,7 +6,7 @@ class Sprite {
 	y = 0;
 	width = 0;
 	height = 0;
-	collisions = false
+	collisions = false // 是否参与碰撞检测
 
 	constructor(image, x, y, width, height, collisions = false) {
 		this.dataStore = DataStore.getInstance()
@@ -24,7 +24,8 @@ class Sprite {
 	}
 
 	isClicked(x, y) {
-		return x > this.x - this.width / 2 && x < this.x + this.width / 2 && y > this.y - this.height / 2 && y < this.y + this.height / 2
+		const {x: spriteX, y: spriteY, width, height} = this
+		return x >= spriteX - width / 2 && x <= spriteX + width / 2 && y >= spriteY  - height / 2&& y <= spriteY + height + height / 2
 	}
 }
 

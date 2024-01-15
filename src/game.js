@@ -1,6 +1,8 @@
 import DataStore from "./core/DataStore.js";
 import SourceLoader from "./core/SourceLoader.js";
 import HomeScene from "./sences/HomeScene.js";
+import {UNIT_LENGTH} from "./config/constant.js";
+import {OverScene} from "./sences/OverScene.js";
 
 class Game {
 	/**
@@ -14,8 +16,8 @@ class Game {
 		document.body.append(this.canvas);
 		this.width = options.width;
 		this.height = options.height;
-		this.canvas.width = options.width * 10;
-		this.canvas.height = options.height * 10;
+		this.canvas.width = options.width * UNIT_LENGTH;
+		this.canvas.height = options.height * UNIT_LENGTH;
 		this.level = options.level || 1;
 		this.ctx = this.canvas.getContext('2d');
 		this.dataStore = DataStore.getInstance();
@@ -33,7 +35,9 @@ class Game {
 	}
 
 	start() {
-		this.currentScene = new HomeScene();
+		// this.currentScene = new HomeScene();
+		// this.currentScene = new GameScene();
+		this.currentScene = new OverScene();
 		this.currentScene.beforeMount();
 		this.loop();
 	}

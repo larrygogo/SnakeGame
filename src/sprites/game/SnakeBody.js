@@ -1,13 +1,12 @@
-import Sprite from "../../core/Sprite.js";
+import {SNAKE_COLOR, UNIT_LENGTH} from "../../config/constant.js";
 import DataStore from "../../core/DataStore.js";
 
-class SnakeBody extends Sprite {
-	constructor(x, y, step = 10) {
-		const image = DataStore.getInstance().res.get('snakeBody');
-		super(image, 0, 0, image.width, image.height, false);
+
+class SnakeBody {
+	constructor(x, y) {
 		this.x = x
 		this.y = y
-		this.step = step;
+		this.dataStore = DataStore.getInstance();
 	}
 
 	move({x, y}) {
@@ -15,12 +14,10 @@ class SnakeBody extends Sprite {
 		this.y = y;
 	}
 
-	draw(image) {
-		this.image = image;
-		super.draw(this.x, this.y, this.step, this.step);
+	draw() {
+		this.dataStore.ctx.fillStyle = SNAKE_COLOR;
+		this.dataStore.ctx.fillRect(this.x, this.y, UNIT_LENGTH, UNIT_LENGTH);
 	}
-
-
 }
 
 export default SnakeBody;

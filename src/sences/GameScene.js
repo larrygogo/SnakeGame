@@ -2,26 +2,51 @@ import Scene from "../core/Scene.js";
 import Event from "../core/Event.js";
 import Snake from "../sprites/game/Snake.js";
 import Food from "../sprites/game/Food.js";
-import HomeScene from "./HomeScene.js";
+import {Floor} from "../sprites/game/Floor.js";
+import {FLOOR_DARK_COLOR, FLOOR_LIGHT_COLOR, UNIT_LENGTH} from "../config/constant.js";
+import {OverScene} from "./OverScene.js";
 
 class GameScene extends Scene{
 	constructor() {
 		super();
 		this.timer = null;
-		this.time = 0
-		this.foods = [];
+		this.time = 0;
+
+		this.game.dataStore.score = 0;
+
+		const maxX = this.game.width;
+		const maxY = this.game.height;
+
+		const maxWidth = maxX * UNIT_LENGTH;
+		const maxHeight = maxY * UNIT_LENGTH;
+
+		// 创建地板
+		Array.from({length: maxX * maxY}).forEach((_, index) => {
+			const floor = new Floor(
+				index % maxX * UNIT_LENGTH,
+				Math.floor(index / maxX) * UNIT_LENGTH,
+				// 奇数行 黑白黑白 偶数行 白黑白黑
+				(index % maxX + Math.floor(index / maxX)) % 2 === 0 ? FLOOR_DARK_COLOR : FLOOR_LIGHT_COLOR
+			)
+			this.addSprite(floor)
+		})
+
+		// 创建蛇
 		this.snake = new Snake({
-			x: 20,
-			y: 20,
+			x: maxWidth / 2,
+			y: maxHeight / 2,
 			forward: 'bottom',
 			step: 10,
 			length: 3
 		});
-		const vacancy1 = this.findVacancy();
-		const vacancy2 = this.findVacancy();
-		this.foods = [new Food(vacancy1.x, vacancy1.y), new Food(vacancy2.x, vacancy2.y)];
 		this.addSprite(this.snake)
+
+		// 创建食物
+		this.foods = [];
+		const vacancy1 = this.findVacancy();
+		this.foods = [new Food(vacancy1.x, vacancy1.y)];
 		this.foods.forEach(food => this.addSprite(food))
+
 		const event = new Event('keydown', (e) => {
 			switch (e.key) {
 				case 'ArrowUp':
@@ -54,7 +79,8 @@ class GameScene extends Scene{
 		this.timer = setInterval(() => {
 			this.time++;
 			if (this.checkIsOver()) {
-				this.game.changeScene(new HomeScene());
+				console.log('游戏结束');
+				this.game.changeScene(new OverScene());
 			}
 		}, 5)
 	}
@@ -65,6 +91,7 @@ class GameScene extends Scene{
 			this.snake.move();
 			this.foods = this.foods.map(food => {
 				if (food.isEaten(this.snake)) {
+					this.game.dataStore.score += 1;
 					this.snake.addBody()
 					const vacancy = this.findVacancy();
 					food.x = vacancy.x;
@@ -80,33 +107,32 @@ class GameScene extends Scene{
 	}
 
 	findVacancy() {
-		// 生成 1 - 49 的随机数
-		const random = (min, max) => {
-			return Math.floor(Math.random() * (max - min + 1) + min);
+		const vacancy = {
+			x: 0,
+			y: 0
 		}
-		const x = random(1, this.game.width - 1) * 10;
-		const y = random(1, this.game.height - 1) * 10;
-		const body = this.snake.body;
-		for (let i = 0; i < body.length; i++) {
-			if (body[i].x === x && body[i].y === y) {
-				return this.findVacancy();
-			}
-		}
-		return {x, y}
+		do {
+			vacancy.x = Math.floor(Math.random() * this.game.width) * UNIT_LENGTH;
+			vacancy.y = Math.floor(Math.random() * this.game.height) * UNIT_LENGTH;
+		} while (this.foods.some(food => food.x === vacancy.x && food.y === vacancy.y) || this.snake.body.some(body => body.x === vacancy.x && body.y === vacancy.y))
+		return vacancy;
 	}
 
 	checkIsOver() {
-		const {x, y} = this.snake;
-		const body = this.snake.body;
-		if (x < 10 || x > (this.game.width - 1) * 10 || y < 10 || y > (this.game.height - 1) * 10) {
+		// 蛇头碰到边界
+		const maxX = this.game.width;
+		const maxY = this.game.height;
+		const maxWidth = maxX * UNIT_LENGTH;
+		const maxHeight = maxY * UNIT_LENGTH;
+
+		if (this.snake.x < 0 || this.snake.x > maxWidth || this.snake.y < 0 || this.snake.y > maxHeight) {
 			return true;
 		}
-		for (let i = 1; i < body.length; i++) {
-			if (body[i].x === x && body[i].y === y) {
-				return true;
-			}
-		}
-		return false;
+
+		// 蛇头碰到身体
+		const {x, y} = this.snake;
+		return this.snake.body.filter((_, i) => i !== 0).some(body => body.x === x && body.y === y);
+
 	}
 
 	destroy() {
